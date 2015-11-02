@@ -21,13 +21,17 @@ def get_pagecontent(url,i=1):#get html webpage
   headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'}
   request = urllib2.Request(url,headers = headers)
   response = urllib2.urlopen(request).read()
+  print "open success"
   write_html(response,i)
   print "Writing "+str(i)+" th webpage!"
-  pattern_next=re.compile('<a href="(\S+)" \S+ \S+ class="next')
-  next_page=re.findall(pattern_next,response)
-  if len(next_page)==1:
-        get_pagecontent('http://www.dianping.com'+next_page[0],i+1)
-
+  soup = BeautifulSoup(response,"lxml")
+  if soup.find('a',{'class':'next'}):
+   next_page=soup.find('a',{'class':'next'})['href']
+   print 'http://www.dianping.com'+next_page
+   if next_page:
+      get_pagecontent('http://www.dianping.com'+next_page,i+1)
+  else:
+      print "End of the pages"
 
 
 
